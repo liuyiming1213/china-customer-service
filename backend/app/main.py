@@ -1,5 +1,8 @@
+import json
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from app.config import get_settings
 from app.repositories.sqlite_repository import SqliteRepository
@@ -55,3 +58,23 @@ async def analyze_ticket(request: AnalyzeTicketRequest) -> TicketAnalysisRespons
         raise HTTPException(status_code=503, detail=str(error)) from error
     except Exception as error:
         raise HTTPException(status_code=500, detail=f"Ticket analysis failed: {error}") from error
+
+
+def format_sse(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+@app.post("/api/tickets/analyze/stream")
+async def analyze_ticket_stream(request: AnalyzeTicketRequest) -> StreamingResponse:
+    async def event_generator():
+        try:
+            async for item in ticket_service.analyze_stream(request):
+                yield format_sse(item["event"], item["data"])
+        except Exception as error:
+            yield format_sse("error", {"message": f"Ticket analysis failed: {error}"})
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
+    )
