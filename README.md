@@ -28,7 +28,10 @@
 python -m uvicorn app.main:app --app-dir backend --reload
 python backend/scripts/download_models.py
 python backend/scripts/ingest_knowledge.py
+.venv\Scripts\python.exe golden_tests\run_all.py
 ```
+
+黄金测试集和自动测试说明见 [黄金测试集测试说明.md](黄金测试集测试说明.md)。每次新增或修改功能后，交付前都必须重新运行该命令。
 
 首次在资源受限的本机验证时，可使用 `INGEST_MAX_THREADS=64` 只导入一批案例；完整导入时移除该变量。生产环境应在 GPU 或专用模型服务上完成全量索引。
 
