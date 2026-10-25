@@ -239,7 +239,9 @@ SSE 事件包括 `stage`、`token`、`result`、`done` 和 `error`。
 | `POST` | `/api/tickets/analyze` | 返回完整 JSON 分析结果 |
 | `POST` | `/api/tickets/analyze/stream` | 通过 SSE 流式返回分析过程和结果 |
 
-## 测试与质量门禁
+## 测试与部署
+
+### 测试
 
 ```powershell
 .venv\Scripts\python.exe golden_tests\run_all.py
@@ -247,7 +249,17 @@ SSE 事件包括 `stage`、`token`、`result`、`done` 和 `error`。
 
 该命令依次执行黄金测试集契约校验、后端全部 pytest 测试和前端 Vite 生产构建。通过标准是输出 `总体结果：通过` 且退出码为 `0`，详细报告位于 `golden_tests/reports/latest_report.md`。
 
-每次新增或修改功能后，都必须重新运行全部测试。黄金测试集及测试策略见 [黄金测试集测试说明.md](黄金测试集测试说明.md)。默认回归测试不调用真实 Qwen API，以避免每次测试产生模型费用；真实模型质量评测应在完成人工金标准标注后单独执行。
+每次新增或修改功能后，都必须重新运行全部测试。默认回归测试不调用真实 Qwen API，以避免每次测试产生模型费用；真实模型质量评测应在完成人工金标准标注后单独执行。
+
+### 生产构建
+
+```powershell
+cd frontend
+npm run build
+npm run preview
+```
+
+后端生产环境建议使用进程管理器或容器运行 Uvicorn，并将 API Key 放入密钥管理系统，不要写入镜像或提交到代码仓库。
 
 ## 项目结构
 
