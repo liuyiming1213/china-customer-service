@@ -7,7 +7,7 @@
 - 长期知识：ChromaDB；
 - Embedding：Qwen3-Embedding-0.6B；
 - Reranker：BGE-Reranker；
-- 生成和判断：DashScope OpenAI-compatible API 的 qwen3.7-flash；
+- 生成和判断：DashScope OpenAI-compatible API 的 qwen3.8-flash；
 - 本地摘要和状态：SQLite 开发实现，后续可切换 PostgreSQL。
 
 ## 启动前准备

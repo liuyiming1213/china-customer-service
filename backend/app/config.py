@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     project_name: str = "China Customer Service AI"
     dashscope_api_key: str = ""
     dashscope_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    dashscope_model: str = "qwen3.7-flash"
+    dashscope_model: str = "qwen3.8-flash"
     database_path: str = "backend/data/customer_service.db"
     chroma_path: str = "backend/chroma_data"
     source_xlsx_path: str = "D:/桌面/脱敏数据2026.2.10.xlsx"
