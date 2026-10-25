@@ -76,6 +76,8 @@ risk_level 只能是 low、medium、high。
         async for fragment in self.model.generate_json_stream(system_prompt, user_prompt):
             fragments.append(fragment)
             yield {"event": "token", "data": {"content": fragment, "count": len(fragments)}}
+        if not fragments:
+            raise RuntimeError("DashScope returned empty streamed content")
         result = json.loads("".join(fragments))
         yield {"event": "stage", "data": {"stage": "validating", "message": "正在执行格式与风险校验"}}
         response = self._response(request, result, retrieved)

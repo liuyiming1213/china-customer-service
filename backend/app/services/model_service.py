@@ -14,6 +14,27 @@ class DashscopeService:
         if not self.settings.dashscope_api_key:
             raise RuntimeError("DASHSCOPE_API_KEY is not configured")
 
+    @staticmethod
+    def _extract_message_content(payload: dict[str, Any]) -> str:
+        choices = payload.get("choices") or []
+        if not choices:
+            raise RuntimeError("DashScope returned no choices")
+        message = choices[0].get("message") or {}
+        content = message.get("content") or ""
+        if not isinstance(content, str):
+            raise RuntimeError("DashScope returned an invalid message content")
+        return content
+
+    @staticmethod
+    def _extract_stream_content(payload: dict[str, Any]) -> str:
+        """Return content from a chunk and safely ignore keep-alive/empty chunks."""
+        choices = payload.get("choices") or []
+        if not choices:
+            return ""
+        delta = (choices[0] or {}).get("delta") or {}
+        content = delta.get("content") or ""
+        return content if isinstance(content, str) else ""
+
     async def generate_json(self, system_prompt: str, user_prompt: str) -> dict[str, Any]:
         self._ensure_key()
         payload = {
@@ -36,7 +57,7 @@ class DashscopeService:
                 json=payload,
             )
             response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
+        content = self._extract_message_content(response.json())
         return json.loads(content)
 
     async def generate_json_stream(self, system_prompt: str, user_prompt: str) -> AsyncIterator[str]:
@@ -71,7 +92,6 @@ class DashscopeService:
                     if data == "[DONE]":
                         break
                     chunk = json.loads(data)
-                    delta = chunk.get("choices", [{}])[0].get("delta", {})
-                    content = delta.get("content") or ""
+                    content = self._extract_stream_content(chunk)
                     if content:
                         yield content
