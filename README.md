@@ -310,8 +310,3 @@ docs: update project documentation
 chore: update tooling or configuration
 ```
 
-## 许可证
-
-当前仓库尚未包含 `LICENSE` 文件。
-
-`[TODO: 选择适用的开源许可证并在项目根目录添加 LICENSE 文件，例如 Apache-2.0、MIT 或 GPL-3.0。]`
